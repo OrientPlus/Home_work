@@ -25,8 +25,12 @@ public:
 	void push(const T& elem);
 	void push(T&& elem);
 	void pop();
+
 	int overlap(stackm& st_two);
+
+	//Checks whether the stack is a subset of the stack passed as a function parameter
 	int subset(stackm& st_two);
+
 	const T& top() const;
 	T& top();
 	T& top(int N);
@@ -131,10 +135,25 @@ inline int stackm<T>::overlap(stackm& st_two)
 template<typename T>
 inline int stackm<T>::subset(stackm& st_two)
 {
+	string s1, s2;
 	if (this->size() > st_two.size())
 		return 0;
-	
-
+	int iterator;
+	for (int j = 0; j<st_two.size()/2; j++)
+	{
+		iterator = st_two.size() - j;
+		for (int i = this->size() - 1; i >= 0; i--)
+		{
+			iterator--;
+			/*s1 = this->top(i);
+			s2 = st_two.top(i);*/
+			if (this->top(i) != st_two.top(iterator))
+				break;
+			if (i == 0)
+				return 1;
+		}
+	}
+	return 0;
 }
 
 template<typename T>

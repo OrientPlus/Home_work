@@ -19,14 +19,25 @@ int main()
 	My_stack();
 	Def_stack();
 
-	stackm<string> st1, st2;
+	stackm<string> st1, st2, st1_1, st2_2;
+	string box1[] = { "onee", "two", "three", "four", "five"},
+		box2[] = { "ten", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
+	
 	st1.fill(STR_COUNT, STR_SIZE);
 	st2.fill(STR_COUNT, STR_SIZE);
 
-	if (st1.overlap(st2))
-		cout << "\nThe stacks are completely the same!" << endl;
+	if (st1.overlap(st2 ))
+		cout << "\n#3 The stacks are completely the same!" << endl;
 	else
-		cout << "The stacks don't match!" << endl;
+		cout << "\n#3 The stacks don't match!" << endl;
+
+	st1_1.fill(box1, 5);
+	st2_2.fill(box2, 10);
+
+	if (st1_1.subset(st2_2))
+		cout << "\n\n#4 The stack is a subset of the stack passed as a parameter." << endl;
+	else
+		cout << "\n\n#4 The stack is not a subset." << endl;
 
 	system("pause");
 	return 0;
