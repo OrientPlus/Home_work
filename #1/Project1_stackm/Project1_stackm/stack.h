@@ -31,11 +31,16 @@ public:
 	//Checks whether the stack is a subset of the stack passed as a function parameter
 	int subset(stackm& st_two);
 
+	//Deletes all occurrences of an element in the stack
+	int Del(const T& elem);
+
 	const T& top() const;
 	T& top();
 	T& top(int N);
 	size_t size() const;
 	chrono::microseconds exec_time;
+
+	void output();
 
 	//Fills the stack with the contents of the container that is passed as an argument
 	void fill(const T* box, const int size_of_container);
@@ -134,7 +139,7 @@ inline int stackm<T>::overlap(stackm& st_two)
 
 template<typename T>
 inline int stackm<T>::subset(stackm& st_two)
-{
+{//проверка на разбросанные элементы??
 	string s1, s2;
 	if (this->size() > st_two.size())
 		return 0;
@@ -157,6 +162,30 @@ inline int stackm<T>::subset(stackm& st_two)
 }
 
 template<typename T>
+inline int stackm<T>::Del(const T& elem)
+{
+	// 1 - #[del] - 3 - 4 - 5 - 6
+	//==>       1 - 3 - 4 - 5 - 6 - 6
+	
+	int delete_count = 0;
+	for (int i = this->size() - 1; i >= 0; i--)
+	{
+		if (elem == this->top(i))
+		{
+			for (int j = i; j < this->size()-1; j++)
+			{
+				this->data[j] = this->data[j + 1];
+			}
+			delete_count++;
+			this->count--;
+		}
+		else
+			continue;
+	}
+	return delete_count;
+}
+
+template<typename T>
 inline const T& stackm<T>::top() const
 {
 	return this->data[this->count - 1];
@@ -171,22 +200,20 @@ inline T& stackm<T>::top()
 template<typename T>
 inline T& stackm<T>::top(int N)
 {
-	int temp_count = this->count;
-	for (int i = 0; i < N; i++)
+	if (N < 0)
 	{
-		if (temp_count > 0)
-		{
-			temp_count--;
-		}
-		else
-		{
-			cout << endl << "ERROR! Stack bottom reached earlier than expected!";
-			system("pause");
-			exit(-1);
-		}
+		cout << endl << "ERROR! Stack bottom reached earlier than expected!\n";
+		system("pause");
+		exit(-1);
+	}
+	else if (N > this->count - 1)
+	{
+		cout << endl << "ERROR! There is no element with such an index!\n";
+		system("pause");
+		exit(-1);
 	}
 
-	return this->data[temp_count - 1];
+	return this->data[N];
 }
 
 template<typename T>
@@ -195,6 +222,16 @@ inline size_t stackm<T>::size() const
 	return this->count;
 }
 
+template<typename T>
+inline void stackm<T>::output()
+{
+	for (int i = 0; i < this->size(); i++)
+	{
+		if (i % 10 == 0)
+			cout << endl;
+		cout << "  " << this->data[i];
+	}
+}
 
 template<typename T>
 inline void stackm<T>::fill(const int rand_amount, const int str_len) 
@@ -239,4 +276,3 @@ inline void stackm<T>::fill(const T* box, const int size_of_mem)
 	auto stop = chrono::high_resolution_clock::now();
 	exec_time = duration_cast<microseconds>(stop - start);
 } 
-

@@ -19,9 +19,11 @@ int main()
 	My_stack();
 	Def_stack();
 
-	stackm<string> st1, st2, st1_1, st2_2;
-	string box1[] = { "onee", "two", "three", "four", "five"},
-		box2[] = { "ten", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
+	stackm<string> st1, st2, st3, st4, st5;
+	string box1[] = { "one", "two", "three", "four", "five"},
+		box2[] = { "ten", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"},
+		box3[] = { "ten", "one", "two", "one", "four", "five", "one", "seven", "eight", "nine",
+		"ten", "one", "one", "three", "one", "five", "six", "one", "eight", "nine" };
 	
 	st1.fill(STR_COUNT, STR_SIZE);
 	st2.fill(STR_COUNT, STR_SIZE);
@@ -31,14 +33,24 @@ int main()
 	else
 		cout << "\n#3 The stacks don't match!" << endl;
 
-	st1_1.fill(box1, 5);
-	st2_2.fill(box2, 10);
+	st3.fill(box1, 5);
+	st4.fill(box2, 10);
+	st5.fill(box3, 20);
+	
 
-	if (st1_1.subset(st2_2))
+	if (st3.subset(st4))
 		cout << "\n\n#4 The stack is a subset of the stack passed as a parameter." << endl;
 	else
 		cout << "\n\n#4 The stack is not a subset." << endl;
 
+
+	cout << endl << "#5 BEFORE DELETE:";
+	st5.output();
+
+	cout << "\n#5 " << st5.Del("one") << " elements find and delete." << endl;
+	st5.output();
+
+	cout << "\n";
 	system("pause");
 	return 0;
 } 
