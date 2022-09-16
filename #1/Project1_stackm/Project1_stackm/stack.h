@@ -5,31 +5,31 @@
 #include <random>
 #include <chrono>
 
-#define STR_SIZE 5
-#define STR_COUNT 5
+#define STR_SIZE 1'000
+#define STR_COUNT 1'000'000
 
 using namespace std;
 using namespace std::chrono;
 
 
 template <typename T>
-class stackm
+class stack_array
 {
 	T* data;
 	size_t count, capacity, fill_count;
 
 	void resize_if_needed();
 public:
-	stackm(size_t capacity = 1'000);
-	~stackm();
+	stack_array(size_t capacity = 2);
+	~stack_array();
 	void push(const T& elem);
 	void push(T&& elem);
 	void pop();
 
-	int overlap(stackm& st_two);
+	int overlap(stack_array& st_two);
 
 	//Checks whether the stack is a subset of the stack passed as a function parameter
-	int subset(stackm& st_two);
+	int subset(stack_array& st_two);
 
 	//Deletes all occurrences of an element in the stack
 	int Del(const T& elem);
@@ -38,7 +38,6 @@ public:
 	T& top();
 	T& top(int N);
 	size_t size() const;
-	chrono::microseconds exec_time;
 
 	void output();
 
@@ -51,11 +50,11 @@ public:
 };
 
 template<typename T>
-inline void stackm<T>::resize_if_needed()
+inline void stack_array<T>::resize_if_needed()
 {
 	if (this->fill_count + this->count >= this->capacity)
 	{
-		size_t new_capacity = this->fill_count + this->count + 10;
+		size_t new_capacity = this->fill_count + this->count + 100;
 		T* new_data = new T[new_capacity];
 		for (size_t i = 0; i < this->capacity; ++i)
 		{
@@ -65,7 +64,7 @@ inline void stackm<T>::resize_if_needed()
 		this->capacity = new_capacity;
 		this->data = new_data;
 	}
-	if (this->count == this->capacity)
+	/*if (this->count == this->capacity)
 	{
 		size_t new_capacity = capacity * 2;
 		T* new_data = new T[new_capacity];
@@ -76,60 +75,55 @@ inline void stackm<T>::resize_if_needed()
 		delete[] this->data;
 		this->capacity = new_capacity;
 		this->data = new_data;
-	}
+	}*/
 }
 
 template<typename T>
-inline stackm<T>::stackm(size_t capacity)
+inline stack_array<T>::stack_array(size_t capacity)
 {
+	this->fill_count = 0;
 	this->data = new T[capacity];
 	this->capacity = capacity;
 	this->count = 0;
 }
 
 template<typename T>
-inline stackm<T>::~stackm()
+inline stack_array<T>::~stack_array()
 {
 	delete[] this->data;
 }
 
 template<typename T>
-inline void stackm<T>::push(const T& elem)
+inline void stack_array<T>::push(const T& elem)
 {
 	resize_if_needed();
 	this->data[count++] = elem;
 }
 
 template<typename T>
-inline void stackm<T>::push(T&& elem)
+inline void stack_array<T>::push(T&& elem)
 {
-	cout << "Stole the pointer" <<endl;
 	resize_if_needed();
 	this->data[count++] = elem;
 }
 
 template<typename T>
-inline void stackm<T>::pop()
+inline void stack_array<T>::pop()
 {
 	if (this->count > 0)
 		--this->count;
 }
 
 template<typename T>
-inline int stackm<T>::overlap(stackm& st_two)
+inline int stack_array<T>::overlap(stack_array& st_two)
 {
 	T temp;
-	int iterator = 0;
 	if (this->size() != st_two.size())
 		return 0;
 	
-	for (int i=0; i<STR_COUNT; i++)
+	for (int i=0; i<this->size(); i++)
 	{
-		iterator--;
-		if (iterator == -1)
-			break;
-		temp = this->top(iterator);
-		if (this->top(iterator) == st_two.top(iterator))
+		if (this->top(i) == st_two.top(i))
 			continue;
 		else
 			return 0;
@@ -138,8 +132,8 @@ inline int stackm<T>::overlap(stackm& st_two)
 }
 
 template<typename T>
-inline int stackm<T>::subset(stackm& st_two)
-{//проверка на разбросанные элементы??
+inline int stack_array<T>::subset(stack_array& st_two)
+{
 	string s1, s2;
 	if (this->size() > st_two.size())
 		return 0;
@@ -162,7 +156,7 @@ inline int stackm<T>::subset(stackm& st_two)
 }
 
 template<typename T>
-inline int stackm<T>::Del(const T& elem)
+inline int stack_array<T>::Del(const T& elem)
 {
 	// 1 - #[del] - 3 - 4 - 5 - 6
 	//==>       1 - 3 - 4 - 5 - 6 - 6
@@ -186,19 +180,19 @@ inline int stackm<T>::Del(const T& elem)
 }
 
 template<typename T>
-inline const T& stackm<T>::top() const
+inline const T& stack_array<T>::top() const
 {
 	return this->data[this->count - 1];
 }
 
 template<typename T>
-inline T& stackm<T>::top()
+inline T& stack_array<T>::top()
 {
 	return this->data[this->count - 1];
 }
 
 template<typename T>
-inline T& stackm<T>::top(int N)
+inline T& stack_array<T>::top(int N)
 {
 	if (N < 0)
 	{
@@ -217,13 +211,13 @@ inline T& stackm<T>::top(int N)
 }
 
 template<typename T>
-inline size_t stackm<T>::size() const
+inline size_t stack_array<T>::size() const
 {
 	return this->count;
 }
 
 template<typename T>
-inline void stackm<T>::output()
+inline void stack_array<T>::output()
 {
 	for (int i = 0; i < this->size(); i++)
 	{
@@ -234,10 +228,8 @@ inline void stackm<T>::output()
 }
 
 template<typename T>
-inline void stackm<T>::fill(const int rand_amount, const int str_len) 
+inline void stack_array<T>::fill(const int rand_amount, const int str_len)
 {
-	auto start = chrono::high_resolution_clock::now();
-
 	int pos = 0;
 	fill_count = rand_amount;
 	resize_if_needed();
@@ -246,33 +238,26 @@ inline void stackm<T>::fill(const int rand_amount, const int str_len)
 	mt19937 gen(rd());
 	uniform_int_distribution<> dist(0, 53);
 	
+	temp.reserve(STR_SIZE);
 	for (int i = 0; i < rand_amount; i++)
 	{
 		temp.clear();
 		for (int j = 0; j < str_len; j++)
 		{
 			pos = dist(gen);
-			temp+= alph[pos];
+			temp += alph[pos];
 		}
 		this->data[count++] = temp;
 	}
-
-	auto stop = chrono::high_resolution_clock::now();
-	exec_time = duration_cast<microseconds>(stop - start);
 }
 
 template<typename T>
-inline void stackm<T>::fill(const T* box, const int size_of_mem)
+inline void stack_array<T>::fill(const T* box, const int size_of_box)
 {
-	auto start = chrono::high_resolution_clock::now();
-
-	fill_count = size_of_mem;
+	fill_count = size_of_box;
 	resize_if_needed();
-	for (int i=0; i<size_of_mem; i++)
+	for (int i=0; i<size_of_box; i++)
 	{
 		this->data[count++] = box[i];
 	}
-
-	auto stop = chrono::high_resolution_clock::now();
-	exec_time = duration_cast<microseconds>(stop - start);
 } 
